@@ -1,0 +1,21 @@
+image: python:3.7
+
+stages:
+  - prechecks
+
+precheck:
+  stage: prechecks
+  tags:
+    - automation-utils.chtrse.com
+  script:
+    - python3 -m venv "venv_usvc"
+    - source venv_usvc/bin/activate  
+    - pip3 install --upgrade pip
+    - pip3 install -r requirements.txt
+    - export SENSE_BEORN_CONFIG=test_config.py    
+    - pytest --flake8 beorn_app
+    - pytest -m "unittest" --cov=beorn_app --cov-report xml --cov-report=term-missing --junitxml=test.xml tests
+  only:
+    - /^feature/
+    - /^fix/
+    - develop
